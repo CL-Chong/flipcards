@@ -25,11 +25,16 @@ def main():
     ]
 
     for mycls in diffq_cls_pl:
-        cls_dict_i, q_dict_i = getdicts(mycls)
-        q_dict.update(q_dict_i)
-        cls_dict.update(cls_dict_i)
+        is_mycls = input(f"Include questions from {mycls}? (y/n) ")
+        if is_mycls == "Y" or is_mycls == "y":
+            cls_dict_i, q_dict_i = getdicts(mycls)
+            q_dict.update(q_dict_i)
+            cls_dict.update(cls_dict_i)
     # for some key q_dict[key] is the callable
     # q_dict[key](cls_dict[key]) takes the variables in the relevant class to output question-answer pairs
+    if not q_dict or not cls_dict:
+        print("No questions selected. Exiting.")
+        return
 
     fig, ax = plt.subplots(figsize=(8, 8))
     plt.rcParams["text.usetex"] = True
@@ -53,7 +58,7 @@ def main():
             0,
             1.6,
             "left-click for answer/next question, right-click to quit",
-            **text_specs
+            **text_specs,
         )
         ax.set_xlim(-2, 2)
         ax.set_ylim(-2, 2)
