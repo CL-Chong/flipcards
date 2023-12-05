@@ -1,30 +1,35 @@
-from sympy import symbols, diff, sin, cos, exp, log, latex, expand
-from fractions import Fraction
+# from fractions import Fraction
+import inspect
 import sys
-from matplotlib.backend_bases import MouseButton
-import numpy as np
-import matplotlib.pyplot as plt
-import importlib
+from types import FunctionType
 
-x = symbols("x", real=True)
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.backend_bases import MouseButton
+
+import differentiation.questions as diffq
+
+# from sympy import cos, diff, exp, expand, latex, log, sin, symbols
+
+
+# x = symbols("x", real=True)
 
 
 def main():
-    # List of questions - comment out the questions you don't want
-    listq = [
-        "diffchain2b",  # chain rule 2b - polynomial inside elementary/power
-        "diffchain2a",  # chain rule 2 - composed elementary functions
-        "diffchain1b",  # chain rule 1b - elementary with powers
-        "diffchain1a",  # chain rule 1 - elementary with linear coefficients
-        "diffuqv1",  # quotient rule 1 - elementary and monomials
-        "diffuqv2",  # quotient rule 2 - polynomial/polynomial
-        "diffuv1b",  # product rule 2 - non-elementary * non-elementary/fractional index
-        "diffuv1a",  # product rule 1 - polynomial * non-polynomial elementary
-        "elediff1",  # elementary function differentiation 1
-        "quickdiff2",  # fractional and negative indices
-        "quickdiff1",  # polynomials
-        "quickdiff0",  # basic monomial with fractional/negative index
+    q_dict = {}
+    cls_dict = {}
+    diffq_cls_pl = [
+        cls
+        for _, cls in inspect.getmembers(diffq, inspect.isclass)
+        if cls.__module__ == diffq.__name__
     ]
+
+    for mycls in diffq_cls_pl:
+        cls_dict_i, q_dict_i = getdicts(mycls)
+        q_dict.update(q_dict_i)
+        cls_dict.update(cls_dict_i)
+    # for some key q_dict[key] is the callable
+    # q_dict[key](cls_dict[key]) takes the variables in the relevant class to output question-answer pairs
 
     fig, ax = plt.subplots(figsize=(8, 8))
     plt.rcParams["text.usetex"] = True
@@ -39,12 +44,10 @@ def main():
         if event.button is MouseButton.RIGHT:
             sys.exit(0)
 
-    diff = importlib.import_module("differentiation.methods")
-    diff_dict = vars(diff)
-
     while True:
         ax.axis("off")
-        question0, answer0 = diff_dict[np.random.choice(listq)]()
+        key_i = np.random.choice(list(q_dict.keys()))
+        question0, answer0 = q_dict[key_i](cls_dict[key_i])
         ax.text(0, 1, question0, **text_specs)
         ax.text(
             0,
@@ -61,6 +64,20 @@ def main():
         plt.draw()
         plt.waitforbuttonpress()
         ax.cla()
+
+
+def getdicts(mycls):
+    # clsdict and fundict are dicts with the same keys.
+    # clsdict[key] gives the class object
+    # fundict[key] gives the callable (instance method) from the class
+    fundict = {}
+    clsdict = {}
+    cls = mycls()
+    for name, func in mycls.__dict__.items():
+        if isinstance(func, FunctionType) and not name.startswith("__"):
+            fundict.update({name: func})
+            clsdict.update({name: cls})
+    return clsdict, fundict
 
 
 if __name__ == "__main__":
