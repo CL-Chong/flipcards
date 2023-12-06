@@ -3,13 +3,16 @@ from fractions import Fraction
 import numpy as np
 from sympy import cos, diff, exp, expand, latex, log, sin, symbols
 
+from classtemplate import QuestionBank
+
 # conventions:
+# all classes must have metaclass QuestionBank
 # Class: declare all symbolic variables used in questions in __init__
 # questions: implemented as instance methods. Need class reference "self" to get relevant symbolic variables
 #            must take self as input and output question, answer
 
 
-class BasicDifferentiation:
+class BasicDifferentiation(metaclass=QuestionBank):
     def __init__(self):
         self._x = symbols("x", real=True)
 
@@ -67,7 +70,7 @@ class BasicDifferentiation:
         return question, answer
 
 
-class ProductRule:
+class ProductRule(metaclass=QuestionBank):
     def __init__(self):
         self._x = symbols("x", real=True)
 
@@ -104,7 +107,7 @@ class ProductRule:
         return question, answer
 
 
-class QuotientRule:
+class QuotientRule(metaclass=QuestionBank):
     def __init__(self):
         self._x = symbols("x", real=True)
 
@@ -171,7 +174,7 @@ class QuotientRule:
         return question, answer
 
 
-class ChainRule:
+class ChainRule(metaclass=QuestionBank):
     def __init__(self):
         self._x = symbols("x", real=True)
 

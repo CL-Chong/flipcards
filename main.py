@@ -1,4 +1,5 @@
 # from fractions import Fraction
+import functools
 import inspect
 import sys
 from types import FunctionType
@@ -17,7 +18,7 @@ import differentiation.questions as diffq
 
 def main():
     q_dict = {}
-    cls_dict = {}
+
     diffq_cls_pl = [
         cls
         for _, cls in inspect.getmembers(diffq, inspect.isclass)
@@ -27,12 +28,11 @@ def main():
     for mycls in diffq_cls_pl:
         is_mycls = input(f"Include questions from {mycls}? (y/n) ")
         if is_mycls == "Y" or is_mycls == "y":
-            cls_dict_i, q_dict_i = getdicts(mycls)
-            q_dict.update(q_dict_i)
-            cls_dict.update(cls_dict_i)
-    # for some key q_dict[key] is the callable
-    # q_dict[key](cls_dict[key]) takes the variables in the relevant class to output question-answer pairs
-    if not q_dict or not cls_dict:
+            q_dict.update(
+                {k: functools.partial(v, mycls()) for k, v in mycls.dispatcher.items()}
+            )
+
+    if not q_dict:
         print("No questions selected. Exiting.")
         return
 
@@ -52,7 +52,7 @@ def main():
     while True:
         ax.axis("off")
         key_i = np.random.choice(list(q_dict.keys()))
-        question0, answer0 = q_dict[key_i](cls_dict[key_i])
+        question0, answer0 = q_dict[key_i]()
         ax.text(0, 1, question0, **text_specs)
         ax.text(
             0,
@@ -71,18 +71,18 @@ def main():
         ax.cla()
 
 
-def getdicts(mycls):
-    # clsdict and fundict are dicts with the same keys.
-    # clsdict[key] gives the class object
-    # fundict[key] gives the callable (instance method) from the class
-    fundict = {}
-    clsdict = {}
-    cls = mycls()
-    for name, func in mycls.__dict__.items():
-        if isinstance(func, FunctionType) and not name.startswith("__"):
-            fundict.update({name: func})
-            clsdict.update({name: cls})
-    return clsdict, fundict
+# def getdicts(mycls):
+#     # clsdict and fundict are dicts with the same keys.
+#     # clsdict[key] gives the class object
+#     # fundict[key] gives the callable (instance method) from the class
+#     fundict = {}
+#     clsdict = {}
+#     cls = mycls()
+#     for name, func in mycls.__dict__.items():
+#         if isinstance(func, FunctionType) and not name.startswith("__"):
+#             fundict.update({name: func})
+#             clsdict.update({name: cls})
+#     return clsdict, fundict
 
 
 if __name__ == "__main__":
