@@ -8,29 +8,57 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import MouseButton
 
-import differentiation.questions as diffq
-
-# from sympy import cos, diff, exp, expand, latex, log, sin, symbols
-
-
-# x = symbols("x", real=True)
+import questions
 
 
 def main():
     q_dict = {}
-
-    diffq_cls_pl = [
-        cls
-        for _, cls in inspect.getmembers(diffq, inspect.isclass)
-        if cls.__module__ == diffq.__name__
+    mdls = [
+        mdl
+        for _, mdl in inspect.getmembers(questions, inspect.ismodule)
+        if not mdl.__name__.startswith("questions._")
     ]
 
-    for mycls in diffq_cls_pl:
-        is_mycls = input(f"Include questions from {mycls}? (y/n) ")
-        if is_mycls == "Y" or is_mycls == "y":
-            q_dict.update(
-                {k: functools.partial(v, mycls()) for k, v in mycls.dispatcher.items()}
-            )
+    for mdl in mdls:
+        is_mdl = input(f"Use {mdl.__name__}? (y/n) ")
+        if is_mdl in ("Y", "y"):
+            submdls = [
+                submdl for _, submdl in inspect.getmembers(mdl, inspect.ismodule)
+            ]
+            for submdl in submdls:
+                is_submdl = input(f"Use {submdl.__name__}? (y/n) ")
+                if is_submdl in ("Y", "y"):
+                    clss = [
+                        cls
+                        for _, cls in inspect.getmembers(submdl, inspect.isclass)
+                        if cls.__module__ == submdl.__name__
+                    ]
+                    for cls in clss:
+                        is_cls = input(f"Use {submdl.__name__}.{cls.__name__}? (y/n) ")
+                        if is_cls in ("Y", "y"):
+                            q_dict.update(
+                                {
+                                    cls.__name__: {
+                                        k: functools.partial(v, cls())
+                                        for k, v in cls.dispatcher.items()
+                                    }
+                                }
+                            )
+
+    # diffq_cls_pl = [
+    #     cls
+    #     for _, cls in inspect.getmembers(
+    #         questions.differentiation.singlevariable, inspect.isclass
+    #     )
+    #     if cls.__module__ == questions.differentiation.singlevariable.__name__
+    # ]
+
+    # for mycls in diffq_cls_pl:
+    #     is_mycls = input(f"Include questions from {mycls}? (y/n) ")
+    #     if is_mycls == "Y" or is_mycls == "y":
+    #         q_dict.update(
+    #             {k: functools.partial(v, mycls()) for k, v in mycls.dispatcher.items()}
+    #         )
 
     if not q_dict:
         print("No questions selected. Exiting.")
@@ -52,7 +80,8 @@ def main():
     while True:
         ax.axis("off")
         key_i = np.random.choice(list(q_dict.keys()))
-        question0, answer0 = q_dict[key_i]()
+        key_j = np.random.choice(list(q_dict[key_i].keys()))
+        question0, answer0 = q_dict[key_i][key_j]()
         ax.text(0, 1, question0, **text_specs)
         ax.text(
             0,

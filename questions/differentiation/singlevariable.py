@@ -3,7 +3,7 @@ from fractions import Fraction
 import numpy as np
 from sympy import cos, diff, exp, expand, latex, log, sin, symbols
 
-from classtemplate import QuestionBank
+from questions._classtemplate import QuestionBank
 
 # conventions:
 # all classes must have metaclass QuestionBank
@@ -12,7 +12,7 @@ from classtemplate import QuestionBank
 #            must take self as input and output question, answer
 
 
-class BasicDifferentiation(metaclass=QuestionBank):
+class Basic(metaclass=QuestionBank):
     def __init__(self):
         self._x = symbols("x", real=True)
 
