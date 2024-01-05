@@ -1,7 +1,19 @@
 from fractions import Fraction
 
 import numpy as np
-from sympy import cos, diff, exp, expand, latex, log, simplify, sin, symbols, tan
+from sympy import (
+    cancel,
+    cos,
+    diff,
+    exp,
+    expand,
+    latex,
+    log,
+    simplify,
+    sin,
+    symbols,
+    tan,
+)
 
 from questions._classtemplate import QuestionBank
 
@@ -12,7 +24,7 @@ from questions._classtemplate import QuestionBank
 #            must take self as input and output question, answer
 
 
-class Rational(metaclass=QuestionBank):
+class Basic(metaclass=QuestionBank):
     def __init__(self):
         self._t = symbols("t", real=True)
 
@@ -34,7 +46,7 @@ class Rational(metaclass=QuestionBank):
         question = f"$x(t) = {latex(xfcn)}, \\ y(t) = {latex(yfcn)}$. \\ Find $\\frac{{dy}}{{dx}}$."
         dxfcn = diff(xfcn, self._t)
         dyfcn = diff(yfcn, self._t)
-        ansfcn = simplify(dyfcn / dxfcn)
+        ansfcn = cancel(dyfcn / dxfcn)
         answer = f"$\\frac{{dy}}{{dx}} = {latex(ansfcn)}$"
         return question, answer
 
@@ -49,6 +61,25 @@ class Rational(metaclass=QuestionBank):
         question = f"$x(t) = {latex(xfcn)}, \\ y(t) = {latex(yfcn)}$. \\ Find $\\frac{{dy}}{{dx}}$."
         dxfcn = diff(xfcn, self._t)
         dyfcn = diff(yfcn, self._t)
-        ansfcn = simplify(dyfcn / dxfcn)
+        ansfcn = cancel(dyfcn / dxfcn)
+        answer = f"$\\frac{{dy}}{{dx}} = {latex(ansfcn)}$"
+        return question, answer
+
+    def ele(self):
+        uu = np.random.choice(
+            [sin(self._t), cos(self._t), exp(self._t), log(self._t)],
+            replace=False,
+            size=2,
+        )
+        np.append(
+            uu,
+            np.random.randint(0, 9)
+            * self._t ** Fraction(np.random.randint(1, 5), np.random.randint(1, 4)),
+        )
+        [xfcn, yfcn] = np.random.choice(uu, replace=False, size=2)
+        question = f"$x(t) = {latex(xfcn)}, \\ y(t) = {latex(yfcn)}$. \\ Find $\\frac{{dy}}{{dx}}$."
+        dxfcn = diff(xfcn, self._t)
+        dyfcn = diff(yfcn, self._t)
+        ansfcn = cancel(dyfcn / dxfcn)
         answer = f"$\\frac{{dy}}{{dx}} = {latex(ansfcn)}$"
         return question, answer

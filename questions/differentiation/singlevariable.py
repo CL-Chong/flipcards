@@ -1,7 +1,7 @@
 from fractions import Fraction
 
 import numpy as np
-from sympy import cos, diff, exp, expand, latex, log, sin, symbols
+from sympy import cancel, cos, diff, exp, expand, latex, log, sin, symbols, trigsimp
 
 from questions._classtemplate import QuestionBank
 
@@ -126,7 +126,10 @@ class QuotientRule(metaclass=QuestionBank):
 
         fcn = u / v
         question = "$\\frac{{d}}{{dx}}\\left(" + latex(fcn) + "\\right)$"
-        dfcn = expand(diff(u, self._x) * v - diff(v, self._x) * u) / (v**2)
+        if u == exp(self._x) or v == exp(self._x):
+            dfcn = cancel(diff(fcn, self._x))
+        else:
+            dfcn = cancel(trigsimp(diff(fcn, self._x)))
         answer = "$" + latex(dfcn) + "$"
         return question, answer
 
@@ -138,7 +141,7 @@ class QuotientRule(metaclass=QuestionBank):
         aa.sort()
         aa = aa[::-1]
 
-        u = bb[0] * (self._x ** aa[0]) + bb[1] * (self._x ** aa[1])
+        u = abs(bb[0]) * (self._x ** aa[0]) + bb[1] * (self._x ** aa[1])
         aa2 = np.random.randint(0, high=4, size=[2])
         bb2 = np.random.randint(-9, high=9, size=[2])
         if bb2[0] == 0 and bb2[1] == 0:
@@ -146,10 +149,10 @@ class QuotientRule(metaclass=QuestionBank):
         aa2.sort()
         aa2 = aa2[::-1]
 
-        v = bb2[0] * (self._x ** aa2[0]) + bb[1] * (self._x ** aa2[1])
+        v = abs(bb2[0]) * (self._x ** aa2[0]) + bb[1] * (self._x ** aa2[1])
         fcn = u / v
         question = "$\\frac{{d}}{{dx}}\\left(" + latex(fcn) + "\\right)$"
-        dfcn = expand(diff(u, self._x) * v - diff(v, self._x) * u) / (v**2)
+        dfcn = cancel(trigsimp(diff(fcn, self._x)))
         answer = "$" + latex(dfcn) + "$"
         return question, answer
 
@@ -163,13 +166,13 @@ class QuotientRule(metaclass=QuestionBank):
         aa.sort()
         aa = aa[::-1]
 
-        u = bb[0] * (self._x ** aa[0]) + bb[1] * (self._x ** aa[1])
+        u = abs(bb[0]) * (self._x ** aa[0]) + bb[1] * (self._x ** aa[1])
         v = np.random.choice([sin(self._x), cos(self._x), exp(self._x), log(self._x)])
         if np.random.uniform(0, 1) > 0.5:
             u, v = v, u
         fcn = u / v
         question = "$\\frac{{d}}{{dx}}\\left(" + latex(fcn) + "\\right)$"
-        dfcn = expand(diff(u, self._x) * v - diff(v, self._x) * u) / (v**2)
+        dfcn = cancel(trigsimp(diff(fcn, self._x)))
         answer = "$" + latex(dfcn) + "$"
         return question, answer
 

@@ -43,7 +43,7 @@ class Basic(metaclass=QuestionBank):
         return question, answer
 
     def eleint1(self):  # integrals of elementary non-polynomial functions
-        ss = [sin(self._x), cos(self._x), exp(self._x), log(self._x)]
+        ss = [sin(self._x), cos(self._x), exp(self._x), 1 / (self._x)]
         bb2 = np.random.randint(-9, high=9, size=[2])
 
         fcn = bb2[0] * np.random.choice(ss) + bb2[1] * np.random.choice(ss)
@@ -65,6 +65,43 @@ class Basic(metaclass=QuestionBank):
             self._x ** Fraction(aa[1], cc[1])
         )
         question = f"$\\int {latex(fcn)} \\ dx$"
+        ifcn = integrate(fcn, self._x)
+        answer = f"${latex(ifcn)} + C$"
+        return question, answer
+
+
+class BySubstitution(metaclass=QuestionBank):
+    def __init__(self):
+        self._x = symbols("x", real=True)
+
+    def powersub1(self):
+        ss = [sin(self._x), cos(self._x), exp(self._x) + 1, log(self._x)]
+        u = np.random.choice(ss)
+
+        fcn = (
+            np.random.choice([-1, 1])
+            * np.random.randint(1, 4)
+            * u ** np.random.randint(1, 5)
+            * diff(u, self._x)
+        )
+        question = f"By considering the substiution $u = {latex(u)}$, \\newline \\qquad find $\\int {latex(fcn)} \\ dx$"
+        ifcn = integrate(fcn, self._x)
+        answer = f"${latex(ifcn)} + C$"
+        return question, answer
+
+    def powersub2(self):
+        u = np.random.randint(1, 3) * self._x ** np.random.randint(
+            1, 5
+        ) + np.random.randint(-3, 3) * self._x ** np.random.randint(0, 4)
+        ss = [sin(u), cos(u), exp(u), 1 / (u)]
+
+        fcn = (
+            np.random.choice([-1, 1])
+            * np.random.randint(1, 4)
+            * np.random.choice(ss)
+            * diff(u, self._x)
+        )
+        question = f"By considering the substiution $u = {latex(u)}$, \\newline \\qquad find $\\int {latex(fcn)} \\ dx$"
         ifcn = integrate(fcn, self._x)
         answer = f"${latex(ifcn)} + C$"
         return question, answer
