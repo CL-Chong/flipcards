@@ -1,7 +1,7 @@
 from fractions import Fraction
 
 import numpy as np
-from sympy import cos, diff, exp, expand, integrate, latex, log, sin, symbols
+from sympy import cos, diff, exp, expand, integrate, latex, log, sin, symbols, tan
 
 from questions._classtemplate import QuestionBank
 
@@ -75,7 +75,7 @@ class BySubstitution(metaclass=QuestionBank):
         self._x = symbols("x", real=True)
 
     def powersub1(self):
-        ss = [sin(self._x), cos(self._x), exp(self._x) + 1, log(self._x)]
+        ss = [sin(self._x), cos(self._x), log(self._x)]
         u = np.random.choice(ss)
 
         fcn = (
@@ -84,7 +84,7 @@ class BySubstitution(metaclass=QuestionBank):
             * u ** np.random.randint(1, 5)
             * diff(u, self._x)
         )
-        question = f"By considering the substiution $u = {latex(u)}$, \\newline \\qquad find $\\int {latex(fcn)} \\ dx$"
+        question = f"By considering the substitution $u = {latex(u)}$, \\newline \\centering find $\\int {latex(fcn)} \\ dx$"
         ifcn = integrate(fcn, self._x)
         answer = f"${latex(ifcn)} + C$"
         return question, answer
@@ -101,7 +101,21 @@ class BySubstitution(metaclass=QuestionBank):
             * np.random.choice(ss)
             * diff(u, self._x)
         )
-        question = f"By considering the substiution $u = {latex(u)}$, \\newline \\qquad find $\\int {latex(fcn)} \\ dx$"
+        question = f"By considering the substitution $u = {latex(u)}$, \\newline \\centering find $\\int {latex(fcn)} \\ dx$"
+        ifcn = integrate(fcn, self._x)
+        answer = f"${latex(ifcn)} + C$"
+        return question, answer
+
+    def elesub1(self):
+        ss = [sin, cos, tan, exp]
+        u = np.random.choice(ss)(self._x)
+        fcn = (
+            np.random.choice([-1, 1])
+            * np.random.randint(1, 4)
+            * np.random.choice(ss)(u)
+            * diff(u, self._x)
+        )
+        question = f"By considering the substitution $u = {latex(u)}$, \\newline \\centering find $\\int {latex(fcn)} \\ dx$"
         ifcn = integrate(fcn, self._x)
         answer = f"${latex(ifcn)} + C$"
         return question, answer
