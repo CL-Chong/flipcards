@@ -15,18 +15,18 @@ import questions._utils as utils
 
 
 def main():
-    full_dict = utils.clean_dict(utils.get_tree(questions), separator=" ")
+    full_dict = utils.clean_dict(utils.get_tree(questions), separator=", ")
 
     q_dict = {}
     root = tkinter.Tk()
     root.geometry("400x400")
     vars_dict = {}
-    tkinter.Label(root, text="Options").place(x=5, y=0)
-    placement = 20
+    tkinter.Label(root, text="Choose your questions:").place(x=5, y=10)
+    placement = 30
     for k, _ in full_dict.items():
         vars_dict.update({k: tkinter.IntVar()})
         tkinter.Checkbutton(
-            root, text=k, variable=vars_dict[k], onvalue=1, offvalue=0
+            root, text=utils.readable(k), variable=vars_dict[k], onvalue=1, offvalue=0
         ).place(x=5, y=placement)
         placement += 20
 

@@ -1,5 +1,6 @@
 import functools
 import inspect
+import re
 
 
 class ModuleTree:
@@ -73,3 +74,18 @@ def clean_dict(mdl_tree, separator=None):
                 # print(kstr)
                 clean_dict.update({kstr: v3})
     return clean_dict
+
+
+def readable(s):
+    tmp = re.sub(pattern=R"singlevariable", repl=R"single variable", string=s)
+
+    def _upper(a):
+        return a.group(1) + a.group(2).upper()
+
+    tmp = re.sub(pattern=R"(\b|^)([a-z])", repl=_upper, string=tmp)
+
+    def _space(a):
+        return a.group(1) + " " + a.group(2)
+
+    tmp = re.sub(pattern=R"([a-z])([A-Z])", repl=_space, string=tmp)
+    return tmp
